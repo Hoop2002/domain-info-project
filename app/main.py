@@ -95,7 +95,7 @@ def domain_create():
         domain_name = data.get("domain_name", False)
         ipv4 = data.get("ipv4", False)
         ipv6 = data.get("ipv6", False)
-        
+
         if not domain_name:
             return invalid_response(message='argument "domain_name" not found')
 
