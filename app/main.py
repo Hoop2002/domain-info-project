@@ -95,20 +95,23 @@ def domain_create():
         domain_name = data.get("domain_name", False)
         ipv4 = data.get("ipv4", False)
         ipv6 = data.get("ipv6", False)
-        print(ipv4)
+        
         if not domain_name:
             return invalid_response(message='argument "domain_name" not found')
-        if not ipv4:
-            ipv4 = []
-        if not ipv6: 
-            ipv6 = []
 
         with Session(autoflush=False, bind=engine) as session_db:
             domain_obj = models.DomainRecords(name=domain_name)
+
+            ipv4_obj = [models.IpV4Records(ip_string=i) for i in ipv4] if ipv4 else []
+            ipv6_obj = [models.IpV6Records(ip_string=i) for i in ipv6] if ipv6 else []
+
+            domain_obj.ipv4 = ipv4_obj
+            domain_obj.ipv6 = ipv6_obj
+
             session_db.add(domain_obj)
             session_db.commit()
 
-        return valid_response({"id": domain_obj.id, "domain_name": domain_obj.name})
+            return valid_response({"id": domain_obj.id, "domain_name": domain_obj.name})
 
 
 @app.route("/api/v1/domain/update", methods=["POST"])
